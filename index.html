@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Warehouse Picker</title>
+
+  <script src="js/warehouse.js"></script>
+
+	<script>
+		window.onload=function(){
+			// Write out the list of products people can use
+			document.getElementById("fullProductList").innerHTML=products.map(function(product) {
+				return product.name;
+			}).join(", ");
+
+			// Make the FPBB text box live-update things
+			var findByBays = document.getElementById("findByBays");
+			findByBays.onkeyup=updateFPBB;
+			// Add the sample click for FPBB
+			document.getElementById("fpbbSample").onclick=function() {
+				findByBays.value = "b3, c7, c9 and a3";
+				updateFPBB.call(findByBays);
+				return false;
+			};
+			function updateFPBB() {
+				var products = findProductsByBays(this.value);
+				document.getElementById("productList").innerHTML = products.productNames.join(", ");
+				document.getElementById("distance").innerHTML = products.distance.toString();
+			};
+
+			// Make the FBBPN text box live-update things
+			var findByProducts = document.getElementById("findByProducts")
+			findByProducts.onkeyup=updateFBBPN;
+			// Add the sample click for FBBPN
+			document.getElementById("fbbpnSample").onclick=function() {
+				findByProducts.value = "hanger, deodorant, candy wrapper, rubber band";
+				updateFBBPN.call(findByProducts);
+				return false;
+			}
+			function updateFBBPN() {
+				var bays = findBaysByProductNames(this.value);
+				document.getElementById("bayList").innerHTML = bays.join(", ");
+			};
+		};
+	</script>
+
+	<style>
+		body {font-family: arial;}
+		span {font-size: 10pt;}
+	</style>
+
+</head>
+<body>
+
+  <h2>Welcome to the Warehouse Picker application!</h2>
+  <h3>If you came here to check out the <b>tests</b>, they are available <b><a href="tests.html">here</a></b>.</h3>
+
+<hr />
+In this amazing application, here's the full list of products and bays that you can use:<br />
+<span id="fullProductList"></span>
+  <br />
+  <br />
+
+<hr />
+You can provide a comma-separated list of bays, and then see a list of items in those bays, along with the distance from the two furthest apart bays.  As you type, changes appear in real-time.<br />
+<a href="#" id="fpbbSample">Click here</a> to put in some sample bays.<br />
+  <input type="text" id="findByBays" size="40"><br />
+  <span id="productList"></span><br />
+<br />
+  Distance: <b><span id="distance">0</span></b>
+  <br />
+  <br />
+<hr />
+
+You can also provide a comma-separated list of products, which will show the bays that need to be visited in order from entrance to exit.  As you type, changes appear in real-time.<br />
+<a href="#" id="fbbpnSample">Click here</a> to put in some sample products.<br />
+  <input type="text" id="findByProducts" size="80"><br />
+  <span id="bayList"></span>
+  <br />
+  <br />
+
+<hr />
+
+</body>
+</html>

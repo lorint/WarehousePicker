@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Warehouse Picker Tests</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.3.4/mocha.min.css" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/3.4.1/chai.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.3.4/mocha.min.js"></script>
+  <script src="js/warehouse.js"></script>
+
+  <script>
+    window.onload=function(){
+      mocha.setup('bdd');
+      // This allows us to write code that looks very similar to using RSpec in Ruby
+      var expect = chai.expect;
+
+      // Products
+      describe('Products', function() {
+        it('Should be an array', function() {
+          expect(products).to.be.a('array');
+        });
+        it('Should have objects inside, which have a name and bay', function() {
+          var first_product = products[0];
+          expect(first_product).to.be.a('object');
+          expect(first_product.name).to.be.a('string');
+          expect(first_product.bay).to.be.a('string');
+        });
+      });
+      describe('Bay Sequence', function() {
+        it('Should return 0 for a10', function() {
+          expect(getBaySequence('a10')).to.equal(0);
+        });
+        it('Should return 9 for a1', function() {
+          expect(getBaySequence('a1')).to.equal(9);
+        });
+        it('Should return 10 for c1', function() {
+          expect(getBaySequence('c1')).to.equal(10);
+        });
+        it('Should return 19 for c10', function() {
+          expect(getBaySequence('c10')).to.equal(19);
+        });
+        it('Should return 20 for b1', function() {
+          expect(getBaySequence('b1')).to.equal(20);
+        });
+        it('Should return 29 for b10', function() {
+          expect(getBaySequence('b10')).to.equal(29);
+        });
+      });
+      describe('Floor Sequence', function() {
+        it('Should be an array', function() {
+          expect(floorSequence).to.be.an('array');
+        });
+        it('Should have the same number of items as products', function() {
+          expect(floorSequence.length).to.equal(products.length);
+        });
+        it("Should have the second item's sequence to be greater than the first", function() {
+          expect(getBaySequence(floorSequence[1].bay)).to.be.greaterThan(getBaySequence(floorSequence[0].bay));
+        });
+        it("Should have the last item's sequence to be greater than the first", function() {
+          expect(getBaySequence(floorSequence[floorSequence.length - 1].bay)).to.be.greaterThan(getBaySequence(floorSequence[0].bay));
+        });
+      });
+      describe('Finding Products By Bays', function() {
+        describe('When asking for bays b5, b10, and b6', function() {
+          var fpbb1;
+          it('Should accept an array and return an object', function() {
+            expect(fpbb1 = findProductsByBays(["b5", "b10", "b6"])).to.be.an('object');
+          });
+          it('Should return an object that has an array of product names, and a distance', function() {
+            expect(fpbb1.productNames).to.be.an('array');
+            expect(fpbb1.distance).to.be.a('number');
+          });
+          it('Should include nail filer, cookie jar, and tooth paste', function() {
+            expect(fpbb1.productNames).to.contain('nail filer');
+            expect(fpbb1.productNames).to.contain('cookie jar');
+            expect(fpbb1.productNames).to.contain('tooth paste');
+          });
+          it('Should return a distance of 5', function() {
+            expect(fpbb1.distance).to.equal(5);
+          });
+        });
+        describe('When asking for bays b3, c7, c9 and a3', function() {
+          var fpbb2;
+          it('Should accept a string and return an object', function() {
+            expect(fpbb2 = findProductsByBays("b3, c7, c9 and a3")).to.be.an('object');
+          });
+          it('Should have the product name from a3 returned as the last item', function() {
+            expect(fpbb2.productNames[fpbb2.productNames.length - 1]).to.equal('blouse');
+          });
+          it('Should include picture frame, paint brush, shoe lace, and blouse', function() {
+            expect(fpbb2.productNames).to.contain('picture frame');
+            expect(fpbb2.productNames).to.contain('paint brush');
+            expect(fpbb2.productNames).to.contain('shoe lace');
+            expect(fpbb2.productNames).to.contain('blouse');
+          });
+          it('Should return a distance of 15', function() {
+            expect(fpbb2.distance).to.equal(15);
+          });
+        });
+      });
+
+      describe('Finding Bays By Product Names', function() {
+        describe('When asking for shoe lace, rusty nail, leg warmers', function() {
+          var fbbpn1;
+          it('Should accept a string and return an array', function() {
+            expect(fbbpn1 = findBaysByProductNames("shoe lace, rusty nail, leg warmers")).to.be.an('array');
+          });
+          it('Should have a list of three bays', function() {
+            expect(fbbpn1.length).to.equal(3);
+          });
+          it('Should have bay c1 returned for the first item', function() {
+            expect(fbbpn1[0]).to.equal('c1');
+          });
+          it('Should have bay c10 returned for the last item', function() {
+            expect(fbbpn1[fbbpn1.length - 1]).to.equal('c10');
+          });
+        });
+        describe('When asking for hanger, deodorant, candy wrapper, rubber band', function() {
+          var fbbpn2;
+          it('Should accept an array and return an array', function() {
+            expect(fbbpn2 = findBaysByProductNames("hanger, deodorant, candy wrapper, rubber band")).to.be.an('array');
+          });
+          it('Should have a list of four bays', function() {
+            expect(fbbpn2.length).to.equal(4);
+          });
+          it('Should have bay a10 returned for the first item', function() {
+            expect(fbbpn2[0]).to.equal('a10');
+          });
+          it('Should have bay b9 returned for the last item', function() {
+            expect(fbbpn2[fbbpn2.length - 1]).to.equal('b9');
+          });
+        });
+      });
+
+      mocha.run();
+    }
+  </script>
+</head>
+<body>
+
+  <h2>Welcome to some sample tests for the Warehouse Picker application!</h2>
+<h3>If you came here to check out the <b>app</b>, it's available <b><a href="index.html">here</a></b>.</h3>
+  These tests support this functionality:
+<ol>
+<li>Given a list of bays, list the items in those bays, and calculate the distance from the two furthest apart bays. For instance:<br />
+<br />
+<ul>
+  <li>given "b5, b10, and b6", determine that the products are "nail filer, cookie jar, and tooth paste", and they're five bays apart</li>
+  <li>given "b3, c7, c9 and a3", determine that the products are "picture frame, paint brush, shoe lace, and blouse", and they're 15 bays apart.</li>
+</ul>
+<br />
+</li>
+<li>
+Given a list of products, find the bays that need to be visited, and order them in the order they need to be visited from entrance to exit. For instance:<br />
+<br />
+<ul>
+  <li>given "shoe lace, rusty nail, leg warmers", determine that those items need to be collected from "c1, c9, and c10"</li>
+  <li>given "hanger, deodorant, candy wrapper, rubber band", determine that those items need to be collected from "a10, a4, c8, and b9"</li>
+</ol>
+  <div id="mocha"></div>
+</body>
+</html>
